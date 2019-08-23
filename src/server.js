@@ -11,7 +11,7 @@ webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
 WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
 
-module.exports = () => {
+module.exports = ({ port }) => {
   const compiler = webpack(webpackConfig);
   compiler.hooks.watchRun.tap('AsyncSeriesHook', () => {
     process.stdout.write('\r                                             ');
@@ -27,5 +27,5 @@ module.exports = () => {
   });
   const server = new WebpackDevServer(compiler, devServerConfig);
 
-  server.listen(8080, 'localhost');
+  server.listen(port, 'localhost');
 };

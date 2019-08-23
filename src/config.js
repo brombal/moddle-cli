@@ -3,8 +3,20 @@ const webpack = require('webpack');
 
 const buildTemplateDir = path.resolve(__dirname, '..', 'build-template');
 
+function loadConfig(appDir) {
+  let maketaConfig;
+  try {
+    maketaConfig = require(path.resolve(appDir, 'maketa.config'));
+  } catch(e) {
+    maketaConfig = {
+      entry: 'main.jsx'
+    }
+  }
+  return maketaConfig;
+}
+
 module.exports.webpack = function getWebpackConfig(appDir, outFile) {
-  const maketaConfig = require(path.resolve(appDir, 'maketa.config'));
+  const maketaConfig = loadConfig(appDir);
   return {
     entry: path.resolve(buildTemplateDir, 'index.tsx'),
     output: {
@@ -50,8 +62,7 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile) {
 };
 
 module.exports.devServer = function getDevServer(appDir) {
-  const maketaConfig = require(path.resolve(appDir, 'maketa.config'));
-  const maketaLibDir = appDir + '/node_modules/maketa';
+  const maketaConfig = loadConfig(appDir);
   return {
     contentBase: buildTemplateDir,
     hot: true,

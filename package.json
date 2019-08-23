@@ -2,7 +2,9 @@
   "name": "maketa-cli",
   "version": "0.0.28",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "start": "src/cli.js"
+  },
   "bin": {
     "maketa": "src/cli.js"
   },
