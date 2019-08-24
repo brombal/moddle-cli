@@ -8,10 +8,10 @@ function loadConfig(appDir) {
   try {
     maketaConfig = require(path.resolve(appDir, 'maketa.config'));
   } catch(e) {
-    maketaConfig = {
-      entry: 'main.jsx'
-    }
   }
+  maketaConfig = Object.assign({}, {
+    entry: 'main'
+  }, maketaConfig);
   return maketaConfig;
 }
 
