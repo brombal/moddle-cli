@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const deepmerge = require('deepmerge');
 
 const buildTemplateDir = path.resolve(__dirname, '..', 'build-template');
 
@@ -15,9 +16,10 @@ function loadConfig(appDir) {
   return maketaConfig;
 }
 
-module.exports.webpack = function getWebpackConfig(appDir, outFile) {
+module.exports.webpack = function getWebpackConfig(appDir, outFile, webpackModifier, tsconfigModifier) {
   const maketaConfig = loadConfig(appDir);
-  return {
+  let config = {
+    mode: 'development',
     entry: path.resolve(buildTemplateDir, 'index.tsx'),
     output: {
       filename: outFile,
@@ -56,14 +58,27 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile) {
     plugins: [
       new webpack.DefinePlugin({
         'maketaConfig.entry': JSON.stringify(path.resolve(appDir, maketaConfig.entry)),
-      })
+      }),
+      new webpack.HotModuleReplacementPlugin()
     ],
   };
+
+  if (typeof tsconfigModifier === 'function')
+    config.module.rules[0].use.options = tsconfigModifier(config.module.rules[0].use.options) || config.module.rules[0].use.options;
+  else if (tsconfigModifier)
+    config.module.rules[0].use.options = deepmerge(config.module.rules[0].use.options, tsconfigModifier);
+
+  if (typeof webpackModifier === 'function')
+    config = webpackModifier(config) || config;
+  else if (webpackModifier)
+    config = deepmerge(config, webpackModifier);
+
+  return config;
 };
 
-module.exports.devServer = function getDevServer(appDir) {
+module.exports.devServer = function getDevServer(appDir, modifier) {
   const maketaConfig = loadConfig(appDir);
-  return {
+  let config = {
     contentBase: buildTemplateDir,
     hot: true,
     host: 'localhost',
@@ -115,4 +130,11 @@ module.exports.devServer = function getDevServer(appDir) {
       });
     }
   };
+
+  if (typeof modifier === 'function')
+    config = modifier(config) || config;
+  else if (modifier)
+    config = deepmerge(config, modifier);
+
+  return config;
 };

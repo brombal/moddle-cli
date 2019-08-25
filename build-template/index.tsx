@@ -12,7 +12,7 @@ function triggerResizeHandler(f) {
 
 const App = () => {
   return <Main.default triggerResize={triggerResizeHandler} />
-}
+};
 
 window.addEventListener('resize', () => {
   triggerResize && triggerResize();

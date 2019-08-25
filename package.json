@@ -3,7 +3,8 @@
   "version": "0.0.31",
   "description": "",
   "scripts": {
-    "start": "src/cli.js"
+    "start": "src/cli.js",
+    "test": "mocha"
   },
   "bin": {
     "maketa": "src/cli.js"
@@ -26,5 +27,9 @@
     "webpack": "^4.39.2",
     "webpack-dev-server": "^3.8.0",
     "yargs": "^13.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0"
   }
 }

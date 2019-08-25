@@ -1,33 +1,19 @@
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const appDir = require('app-root-path').toString();
-const deepmerge = require('deepmerge');
 
 const configBuilder = require('./config');
 
 module.exports = (options) => {
-  const { port } = options;
+  const {
+    port,
+    webpack: webpackModifier,
+    tsconfig: tsconfigModifier,
+    devServer: devServerModifier,
+  } = options;
 
-  let webpackConfig = configBuilder.webpack(appDir, 'index.js');
-
-  if (typeof options.tsconfig === 'function')
-    options.tsconfig(webpackConfig.module.rules[0].use.options);
-  else if (options.tsconfig)
-    webpackConfig.module.rules[0].use.options = deepmerge(webpackConfig.module.rules[0].use.options, options.tsconfig);
-
-  if (typeof options.webpack === 'function')
-    options.webpack(webpackConfig);
-  else if (options.webpack)
-    webpackConfig = deepmerge(webpackConfig, options.webpack);
-
-  let devServerConfig = configBuilder.devServer(appDir);
-  if (typeof options.devServer === 'function')
-    options.devServer(devServerConfig);
-  else if (options.devServer)
-    devServerConfig = deepmerge(devServerConfig, options.devServer);
-
-  webpackConfig.mode = 'development';
-  webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+  const webpackConfig = configBuilder.webpack(appDir, 'index.js', webpackModifier, tsconfigModifier);
+  const devServerConfig = configBuilder.devServer(appDir, devServerModifier);
 
   WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
   const compiler = webpack(webpackConfig);
@@ -42,7 +28,7 @@ module.exports = (options) => {
       process.stdout.write('\r                                         \r');
     }
   });
+  process.stdout.write(`Maketa listenening on http://${devServerConfig.host}:${port}/\n\n`);
   const server = new WebpackDevServer(compiler, devServerConfig);
-
-  server.listen(port, 'localhost');
+  server.listen(port, devServerConfig.host);
 };
