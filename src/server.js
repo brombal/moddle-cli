@@ -20,26 +20,23 @@ module.exports = (options) => {
   else if (options.webpack)
     webpackConfig = deepmerge(webpackConfig, options.webpack);
 
-  const devServerConfig = configBuilder.devServer(appDir);
+  let devServerConfig = configBuilder.devServer(appDir);
   if (typeof options.devServer === 'function')
     options.devServer(devServerConfig);
   else if (options.devServer)
-    webpackConfig = deepmerge(devServerConfig, options.devServer);
+    devServerConfig = deepmerge(devServerConfig, options.devServer);
 
   webpackConfig.mode = 'development';
   webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
 
   WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
-
   const compiler = webpack(webpackConfig);
   compiler.hooks.watchRun.tap('AsyncSeriesHook', () => {
-    process.stdout.cur
     process.stdout.write('\r                                             ');
     process.stdout.write('\r🔷 Building...');
   });
   compiler.hooks.done.tap('AsyncSeriesHook', (stats) => {
     if (!stats.compilation.errors.length) {
-      // console.log(stats.compilation);
       process.stdout.write('\r💚 Successfully built at ' + new Date().toLocaleString());
     } else {
       process.stdout.write('\r                                         \r');
