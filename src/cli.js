@@ -1,18 +1,45 @@
 #!/usr/bin/env node
 
 try {
-  require('yargs')
-    .command(['start [port]'], 'Run a local development server on port (default 5000)', (yargs) => {
+  const yargs = require('yargs');
+  const argv = yargs
+    .command('start', 'Run a local development server', (yargs) => {
       yargs
-        .positional('port', {
+        .option('port', {
+          alias: 'p',
           describe: 'Port to bind on',
-          default: 5000
+          default: 5000,
+          type: 'number'
         })
+        .option('template', {
+          describe: 'Template .ejs file to render',
+          type: 'string'
+        })
+        .option('tsconfig', {
+          describe: 'Additional options for TypeScript compiler',
+        })
+        .option('webpack', {
+          describe: 'Additional options for webpack',
+        })
+        .option('devServer', {
+          describe: 'Additional options for webpack dev server',
+        })
+        .config('config', path => {
+          let config = require(path);
+          if (typeof config === 'function') config = config();
+          return config;
+        })
+        .default('config', 'maketa.config.json')
     }, require('./server'))
-    .showHelpOnFail()
-    .demandCommand(1)
     .recommendCommands()
     .exitProcess(false)
+    .strict()
     .argv;
+
+  if (!argv._[0] && !argv.help) {
+    yargs.showHelp();
+  }
+
 } catch(e) {
+  console.log(e);
 }

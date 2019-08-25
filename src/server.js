@@ -1,26 +1,46 @@
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const appDir = require('app-root-path').toString();
+const deepmerge = require('deepmerge');
 
-const config = require('./config');
-const webpackConfig = config.webpack(appDir, 'index.js');
-const devServerConfig = config.devServer(appDir);
+const configBuilder = require('./config');
 
-webpackConfig.mode = 'development';
-webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+module.exports = (options) => {
+  const { port } = options;
 
-WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
+  let webpackConfig = configBuilder.webpack(appDir, 'index.js');
 
-module.exports = ({ port }) => {
+  if (typeof options.tsconfig === 'function')
+    options.tsconfig(webpackConfig.module.rules[0].use.options);
+  else if (options.tsconfig)
+    webpackConfig.module.rules[0].use.options = deepmerge(webpackConfig.module.rules[0].use.options, options.tsconfig);
+
+  if (typeof options.webpack === 'function')
+    options.webpack(webpackConfig);
+  else if (options.webpack)
+    webpackConfig = deepmerge(webpackConfig, options.webpack);
+
+  const devServerConfig = configBuilder.devServer(appDir);
+  if (typeof options.devServer === 'function')
+    options.devServer(devServerConfig);
+  else if (options.devServer)
+    webpackConfig = deepmerge(devServerConfig, options.devServer);
+
+  webpackConfig.mode = 'development';
+  webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+  WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
+
   const compiler = webpack(webpackConfig);
   compiler.hooks.watchRun.tap('AsyncSeriesHook', () => {
+    process.stdout.cur
     process.stdout.write('\r                                             ');
-    process.stdout.write('\r🔷  Building...');
+    process.stdout.write('\r🔷 Building...');
   });
   compiler.hooks.done.tap('AsyncSeriesHook', (stats) => {
     if (!stats.compilation.errors.length) {
       // console.log(stats.compilation);
-      process.stdout.write('\r💚  Successfully built at ' + new Date().toLocaleString());
+      process.stdout.write('\r💚 Successfully built at ' + new Date().toLocaleString());
     } else {
       process.stdout.write('\r                                         \r');
     }

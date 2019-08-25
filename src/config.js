@@ -28,13 +28,13 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile) {
         '@app': appDir,
         'react-dom': '@hot-loader/react-dom'
       },
-      extensions: ['.ts', '.tsx', '.js']
+      extensions: ['.ts', '.tsx', '.js', '.jsx']
     },
     module: {
       rules: [
         {
           test: /\.tsx?$/,
-          use: [{
+          use: {
             loader: 'ts-loader',
             options: {
               configFile: path.resolve(appDir, 'tsconfig.json'),
@@ -46,7 +46,7 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile) {
                 jsx: "react",
               }
             }
-          }],
+          },
         }, {
           test: /\.glb$/,
           use: 'file-loader'
