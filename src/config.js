@@ -61,6 +61,18 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile, webpackModif
       }),
       new webpack.HotModuleReplacementPlugin()
     ],
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            test: /node_modules/,
+            chunks: 'initial',
+            filename: 'vendor.js',
+            enforce: true
+          },
+        }
+      }
+    }
   };
 
   if (typeof tsconfigModifier === 'function')
@@ -117,10 +129,13 @@ module.exports.devServer = function getDevServer(appDir, modifier) {
       server.use('/', function(req, res, next) {
         if (req.url === '/') {
           res.render(
-            path.resolve(appDir, maketaConfig.template) || path.resolve(buildTemplateDir + '/index.ejs'),
+            maketaConfig.template ? path.resolve(appDir, maketaConfig.template) : path.resolve(buildTemplateDir + '/index.ejs'),
             {
               maketa: {
-                scripts: `<script type="text/javascript" src="index.js"></script>`
+                scripts: `
+                  <script type="text/javascript" src="vendor.js"></script>
+                  <script type="text/javascript" src="index.js"></script>
+                `
               }
             }
           );
