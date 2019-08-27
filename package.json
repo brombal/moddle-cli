@@ -12,7 +12,7 @@
   "author": "Alex Brombal",
   "license": "UNLICENSED",
   "peerDependencies": {
-    "maketa": "github:brombal/maketa"
+    "maketa": "^0.0.1"
   },
   "dependencies": {
     "@hot-loader/react-dom": "^16.9.0",

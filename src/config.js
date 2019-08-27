@@ -94,6 +94,7 @@ module.exports.devServer = function getDevServer(appDir, modifier) {
     contentBase: buildTemplateDir,
     hot: true,
     host: 'localhost',
+    port: 3030,
     noInfo: true,
     stats: {
       assets: false,

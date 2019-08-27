@@ -14,6 +14,7 @@ module.exports = (options) => {
 
   const webpackConfig = configBuilder.webpack(appDir, 'index.js', webpackModifier, tsconfigModifier);
   const devServerConfig = configBuilder.devServer(appDir, devServerModifier);
+  devServerConfig.port = port || devServerConfig.port;
 
   WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerConfig);
   const compiler = webpack(webpackConfig);
@@ -28,7 +29,7 @@ module.exports = (options) => {
       process.stdout.write('\r                                         \r');
     }
   });
-  process.stdout.write(`Maketa listenening on http://${devServerConfig.host}:${port}/\n\n`);
+  process.stdout.write(`Maketa listenening on http://${devServerConfig.host}:${devServerConfig.port}/\n\n`);
   const server = new WebpackDevServer(compiler, devServerConfig);
-  server.listen(port, devServerConfig.host);
+  server.listen(devServerConfig.port, devServerConfig.host);
 };

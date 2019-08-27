@@ -8,7 +8,6 @@ try {
         .option('port', {
           alias: 'p',
           describe: 'Port to bind on',
-          default: 5000,
           type: 'number'
         })
         .option('template', {
