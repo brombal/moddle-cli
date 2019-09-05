@@ -8,7 +8,7 @@ describe('Config', function() {
       const webpackConfig = config.webpack('.', 'file.js');
       expect(webpackConfig).to.not.be.null;
       expect(webpackConfig.resolve.alias['@app']).to.equal('.');
-      expect(webpackConfig.module.rules[0].use.options.configFile).to.equal(path.resolve('./tsconfig.json'));
+      expect(webpackConfig.module.rules[0].use.options.configFile).to.be.null;
     });
 
     it('should modify webpack config with object', function() {

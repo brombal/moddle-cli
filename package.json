@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "src/cli.js",
-    "test": "mocha"
+    "test": "mocha",
+    "publish": "npm test && git commit -a -m 'Build & publish' && npm version patch && npm publish"
   },
   "bin": {
     "maketa": "src/cli.js"
@@ -20,6 +21,7 @@
     "deepmerge": "^4.0.0",
     "ejs": "^2.6.2",
     "file-loader": "^4.2.0",
+    "findup-sync": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
     "react-hot-loader": "^4.12.11",
     "ts-loader": "^6.0.4",

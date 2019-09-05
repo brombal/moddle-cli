@@ -1,6 +1,9 @@
+const path = require('path');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const appDir = require('app-root-path').toString();
+const findup = require('findup-sync');
+const configFile = findup('maketa.config.{js,json}');
+const appDir = path.dirname(configFile);
 
 const configBuilder = require('./config');
 

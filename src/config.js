@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const deepmerge = require('deepmerge');
+const findup = require('findup-sync');
 
 const buildTemplateDir = path.resolve(__dirname, '..', 'build-template');
 
@@ -39,7 +40,7 @@ module.exports.webpack = function getWebpackConfig(appDir, outFile, webpackModif
           use: {
             loader: 'ts-loader',
             options: {
-              configFile: path.resolve(appDir, 'tsconfig.json'),
+              configFile: findup('tsconfig.json', appDir),
               compilerOptions: {
                 module: "es6",
                 target: "es5",
